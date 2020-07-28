@@ -1,16 +1,12 @@
 const { Router } = require("express");
 const Order = require('../models/order');
-const order = require("../models/order");
+const auth = require('../middleware/auth');
 
 const ordersRouter = Router();
 
-ordersRouter.get('/', async (req, res) => {
+ordersRouter.get('/', auth, async (req, res) => {
     try {
         const orders = await Order.find({ 'user.userId': req.user._id }).populate('user.userId').lean();
-
-        // orders.map(o => {
-        //     return console.log(o);
-        // })
 
         res.render('orders', {
             isOrder: true,
@@ -29,7 +25,7 @@ ordersRouter.get('/', async (req, res) => {
     }
 });
 
-ordersRouter.post('/', async (req, res) => {
+ordersRouter.post('/', auth, async (req, res) => {
     try {
         const user = await req.user
         .populate('cart.items.courseId')
