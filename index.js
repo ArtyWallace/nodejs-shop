@@ -2,17 +2,18 @@ const express = require('express');
 const app = express();
 
 const csurf = require('csurf');
+const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const path = require('path');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 
-const MONGODB_URI = 'mongodb+srv://artem:LmVIAtmN64WO5r5A@cluster0.qkp5a.mongodb.net/shop?retryWrites=true&w=majority';
+const keys = require('./keys/index');
 
 const store = new MongoStore({
     collection: 'sessions',
-    uri: MONGODB_URI
+    uri: keys.MONGO_URI
 });
 
 const hbs = exphbs.create({
@@ -28,13 +29,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({ 
-    secret: 'some secret key',
+    secret: keys.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store
 }));
 
 app.use(csurf());
+app.use(flash());
 app.use(require('./middleware/variables'));
 app.use(require('./middleware/user'));
 
@@ -49,7 +51,7 @@ const PORT = process.env.PORT || 3000;
 
 const start = async () => {
     try {
-        await mongoose.connect(MONGODB_URI, {
+        await mongoose.connect(keys.MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
