@@ -62,7 +62,7 @@ const PORT = process.env.PORT || 3000;
 
 const start = async () => {
     try {
-        await mongoose.connect(keys.MONGO_URI, {
+        await mongoose.connect(keys.MONGO_URI || process.env.MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
