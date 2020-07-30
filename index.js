@@ -4,6 +4,8 @@ const app = express();
 const csurf = require('csurf');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const compression = require('compression');
 const path = require('path');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
@@ -41,6 +43,8 @@ app.use(require('./middleware/upload').single('avatar'));
 
 app.use(csurf());
 app.use(flash());
+app.use(helmet());
+app.use(compression());
 app.use(require('./middleware/variables'));
 app.use(require('./middleware/user'));
 
