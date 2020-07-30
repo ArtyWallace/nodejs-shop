@@ -18,7 +18,8 @@ const store = new MongoStore({
 
 const hbs = exphbs.create({
     defaultLayout: 'main',
-    extname: 'hbs'
+    extname: 'hbs',
+    helpers: require('./utils/hbs-helper.js')
 });
 
 app.engine('hbs', hbs.engine);
@@ -26,6 +27,7 @@ app.set('view engine', 'hbs');
 app.set('views', 'views');
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images' ,express.static(path.join(__dirname, 'images')));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({ 
@@ -34,6 +36,8 @@ app.use(session({
     saveUninitialized: false,
     store
 }));
+
+app.use(require('./middleware/upload').single('avatar'));
 
 app.use(csurf());
 app.use(flash());
@@ -46,6 +50,9 @@ app.use('/add', require('./routes/add.routes'));
 app.use('/card', require('./routes/card.routes'));
 app.use('/orders', require('./routes/orders.routes'));
 app.use('/auth', require('./routes/auth.routes'));
+app.use('/profile', require('./routes/profile.routes'));
+
+app.use(require('./middleware/error'));
 
 const PORT = process.env.PORT || 3000;
 
